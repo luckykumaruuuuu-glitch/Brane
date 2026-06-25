@@ -1,0 +1,26 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "hhjNizLZqjf1v9XLwg9H5"
+uri = "file://artifacts/brainguard/assets/images/brain-mascot.png"
+type = "image"
+title = "cute brain mascot"
+
+[[generated]]
+id = "dpCCnmNF2pRYbGXe31DcY"
+uri = "file://artifacts/brainguard/assets/images/icon.png"
+type = "image"
+title = "brainguard app icon"
+
+[[generated]]
+id = "UrDkqm77jMkGb3LY1xda-"
+uri = "file://artifacts/brainguard/assets/images/brain-gift.png"
+type = "image"
+title = "brain mascot gift"
+
+[[generated]]
+id = "ujN4TpTp-Nm_LVwaQju0q"
+uri = "file://artifacts/brainguard/assets/images/brain-lock.png"
+type = "image"
+title = "brain mascot lock"

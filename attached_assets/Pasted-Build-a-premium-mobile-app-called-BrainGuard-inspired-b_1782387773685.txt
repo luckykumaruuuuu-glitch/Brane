@@ -1,0 +1,191 @@
+Build a premium mobile app called "BrainGuard" inspired by modern habit-tracking and doom-scrolling reduction apps.
+
+Design Style:
+- Dark theme (#000000 background)
+- Premium gold gradient buttons
+- Smooth animations (60fps)
+- Cute AI brain mascot throughout onboarding
+- Modern glassmorphism cards
+- Large bold typography
+- Highly polished and premium feel like Headspace + Duolingo + BrainPal
+
+Tech Stack:
+- React Native (Expo)
+- Firebase Authentication
+- Firebase Firestore
+- Firebase Analytics
+- Replicate AI integration
+- Accessibility Service for reel detection
+- Local device processing where possible
+
+Firebase Config:
+[Paste Firebase Config Here]
+
+APP FLOW:
+
+SCREEN 1 - Welcome
+Title:
+"Take Back Control Of Your Time"
+
+Subtitle:
+"Track and reduce your short video consumption"
+
+Large animated brain mascot.
+
+Buttons:
+- Get Started
+- Sign In
+
+SCREEN 2 - Widget Introduction
+
+Show:
+Phone mockup with widget.
+
+Text:
+"See your reel count instantly from your home screen"
+
+Button:
+"Add Widget"
+
+SCREEN 3 - Privacy
+
+Text:
+"We only count reels."
+"Your personal data stays on your phone."
+
+Animated brain holding lock.
+
+Button:
+"Continue"
+
+SCREEN 4 - Permissions
+
+Permissions required:
+1. Display over other apps
+2. Background running
+3. Accessibility service
+
+Show progress indicators.
+
+Each permission should animate when granted.
+
+SCREEN 5 - Friend Challenge
+
+Split screen battle UI.
+
+User count:
+36
+
+Friend count:
+93
+
+Button:
+"Challenge Your Friend"
+
+Secondary:
+"I'll Do It Later"
+
+SCREEN 6 - Reward
+
+Animated brain holding gift box.
+
+Text:
+"You've earned a gift for taking the first step"
+
+Button:
+"Unlock Gift"
+
+SCREEN 7 - Discount Offer
+
+Show:
+70% OFF
+
+Countdown timer.
+
+Premium offer card.
+
+Button:
+"Continue"
+
+SCREEN 8 - Subscription
+
+Yearly:
+₹299/year
+
+Monthly:
+₹99/month
+
+PhonePe support.
+
+Premium features list:
+- Unlimited tracking
+- Daily reports
+- Friend challenges
+- AI insights
+
+SCREEN 9 - Open Instagram
+
+Text:
+"Open Instagram to see BrainGuard in action"
+
+Large Instagram button.
+
+MAIN APP DASHBOARD
+
+Top:
+Animated brain mascot
+
+Center:
+Today's Reel Count
+
+Example:
+56 Reels Today
+
+Statistics:
+- Daily reels
+- Weekly reels
+- Monthly reels
+- Time wasted
+
+Charts:
+- Bar chart
+- Weekly trend graph
+
+AI INSIGHTS SECTION
+
+Replicate AI analyzes:
+- Reels watched
+- Categories consumed
+- Estimated attention loss
+- Screen time patterns
+
+Show cards:
+"Productivity Score"
+"Focus Score"
+"Scroll Risk"
+
+REAL-TIME REEL DETECTION
+
+Use Android Accessibility Service.
+
+Detect:
+- Instagram Reels
+- YouTube Shorts
+- Facebook Reels
+
+Update count instantly.
+
+Display floating bubble overlay.
+
+ANIMATIONS
+
+Use:
+- Reanimated
+- Lottie
+- Smooth page transitions
+- Mascot idle animations
+- Reward animations
+
+Goal:
+Pixel-perfect premium UI comparable to BrainPal.
+Generate all screens, components, navigation, Firebase integration, and folder structure.
