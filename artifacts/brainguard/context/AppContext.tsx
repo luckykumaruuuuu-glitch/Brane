@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { Platform } from "react-native";
 
 interface DayStats {
   date: string;
@@ -34,7 +35,7 @@ function getTodayString() {
 }
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [onboardingComplete, setOnboardingCompleteState] = useState(false);
+  const [onboardingComplete, setOnboardingCompleteState] = useState(Platform.OS === "web");
   const [reelCount, setReelCount] = useState(56);
   const [weeklyData, setWeeklyData] = useState([32, 45, 67, 41, 89, 56, 72]);
   const [loaded, setLoaded] = useState(false);
@@ -49,7 +50,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           AsyncStorage.getItem(STORAGE_KEYS.WEEKLY_DATA),
         ]);
 
-        setOnboardingCompleteState(onboarding === "true");
+        if (onboarding !== null) setOnboardingCompleteState(onboarding === "true");
 
         const today = getTodayString();
         if (date === today && count !== null) {

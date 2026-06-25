@@ -1,8 +1,30 @@
 import { Tabs } from "expo-router";
-import { Feather } from "@expo/vector-icons";
 import React from "react";
-import { Platform, View, StyleSheet } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 import { BlurView } from "expo-blur";
+
+function YouIcon({ color }: { color: string }) {
+  return (
+    <View style={{ width: 28, height: 28, alignItems: "center", justifyContent: "center" }}>
+      <Text style={{ fontSize: 22, opacity: color === "#E8B030" ? 1 : 0.5 }}>🐾</Text>
+    </View>
+  );
+}
+
+function BattleIcon({ color, badge }: { color: string; badge?: boolean }) {
+  return (
+    <View style={{ width: 28, height: 28, alignItems: "center", justifyContent: "center" }}>
+      <Text style={{ fontSize: 22, opacity: color === "#E8B030" ? 1 : 0.5 }}>⚔️</Text>
+      {badge && (
+        <View style={{
+          position: "absolute", top: -2, right: -2,
+          width: 8, height: 8, borderRadius: 4,
+          backgroundColor: "#FF3B30",
+        }} />
+      )}
+    </View>
+  );
+}
 
 export default function TabLayout() {
   const isIOS = Platform.OS === "ios";
@@ -11,7 +33,7 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#D4AF37",
+        tabBarActiveTintColor: "#E8B030",
         tabBarInactiveTintColor: "#555555",
         tabBarStyle: {
           position: "absolute",
@@ -24,16 +46,12 @@ export default function TabLayout() {
         },
         tabBarBackground: () =>
           isIOS ? (
-            <BlurView
-              intensity={80}
-              tint="dark"
-              style={StyleSheet.absoluteFill}
-            />
+            <BlurView intensity={90} tint="dark" style={StyleSheet.absoluteFill} />
           ) : (
             <View style={[StyleSheet.absoluteFill, { backgroundColor: "#000000", borderTopColor: "#1A1A1A", borderTopWidth: 1 }]} />
           ),
         tabBarLabelStyle: {
-          fontSize: 10,
+          fontSize: 12,
           fontFamily: "Inter_500Medium",
         },
       }}
@@ -41,22 +59,15 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Dashboard",
-          tabBarIcon: ({ color }) => <Feather name="activity" size={22} color={color} />,
+          title: "You",
+          tabBarIcon: ({ color }) => <YouIcon color={color} />,
         }}
       />
       <Tabs.Screen
-        name="insights"
+        name="battle"
         options={{
-          title: "Insights",
-          tabBarIcon: ({ color }) => <Feather name="cpu" size={22} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: "Settings",
-          tabBarIcon: ({ color }) => <Feather name="settings" size={22} color={color} />,
+          title: "Battle",
+          tabBarIcon: ({ color }) => <BattleIcon color={color} badge />,
         }}
       />
     </Tabs>
