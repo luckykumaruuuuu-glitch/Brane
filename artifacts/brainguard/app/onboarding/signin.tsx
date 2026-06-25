@@ -29,7 +29,7 @@ export default function SignInScreen() {
         <View style={styles.bgPhone}>
           <View style={styles.bgPhoneInner}>
             <View style={styles.bgCounter}>
-              <Image source={require("../../assets/images/brain-mascot.png")} style={styles.bgBrain} contentFit="contain" />
+              <Image source={require("../../assets/images/brain-mascot-nobg.png")} style={styles.bgBrain} contentFit="contain" />
               <Text style={styles.bgCount}>41</Text>
             </View>
           </View>

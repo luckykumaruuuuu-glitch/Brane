@@ -45,7 +45,7 @@ export default function InstagramScreen() {
       <View style={styles.cardBlock}>
         <Animated.View style={[styles.mascotPeek, { transform: [{ translateY: mascotSlide }] }]}>
           <Image
-            source={require("../../assets/images/brain-mascot.png")}
+            source={require("../../assets/images/brain-mascot-nobg.png")}
             style={styles.mascot}
             contentFit="contain"
           />

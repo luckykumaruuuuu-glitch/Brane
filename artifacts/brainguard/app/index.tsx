@@ -41,7 +41,7 @@ export default function WelcomeScreen() {
     <Animated.View style={[styles.container, { paddingTop: topPad, paddingBottom: bottomPad + 20, opacity: fadeAnim }]}>
       <View style={styles.topBar}>
         <View style={styles.logoRow}>
-          <Image source={require("../assets/images/brain-mascot.png")} style={styles.logoIcon} contentFit="contain" />
+          <Image source={require("../assets/images/brain-mascot-nobg.png")} style={styles.logoIcon} contentFit="contain" />
           <Text style={styles.logoText}>BRAIN<Text style={styles.logoTextDim}>GUARD</Text></Text>
         </View>
         <View style={styles.langBtn}>
@@ -76,7 +76,7 @@ export default function WelcomeScreen() {
               </View>
             </View>
             <View style={styles.counterBubble}>
-              <Image source={require("../assets/images/brain-mascot.png")} style={styles.bubbleBrain} contentFit="contain" />
+              <Image source={require("../assets/images/brain-mascot-nobg.png")} style={styles.bubbleBrain} contentFit="contain" />
               <Text style={styles.counterNum}>{displayCount}</Text>
             </View>
           </View>

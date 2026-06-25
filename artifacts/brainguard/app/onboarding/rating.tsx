@@ -29,7 +29,7 @@ export default function RatingScreen() {
 
         <Animated.View style={[styles.mascotWrapper, { transform: [{ scale: mascotAnim }] }]}>
           <Image
-            source={require("../../assets/images/brain-star.png")}
+            source={require("../../assets/images/brain-star-nobg.png")}
             style={styles.mascot}
             contentFit="contain"
           />

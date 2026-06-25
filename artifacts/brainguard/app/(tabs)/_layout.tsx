@@ -1,30 +1,8 @@
 import { Tabs } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { BlurView } from "expo-blur";
-
-function YouIcon({ color }: { color: string }) {
-  return (
-    <View style={{ width: 28, height: 28, alignItems: "center", justifyContent: "center" }}>
-      <Text style={{ fontSize: 22, opacity: color === "#E8B030" ? 1 : 0.5 }}>🐾</Text>
-    </View>
-  );
-}
-
-function BattleIcon({ color, badge }: { color: string; badge?: boolean }) {
-  return (
-    <View style={{ width: 28, height: 28, alignItems: "center", justifyContent: "center" }}>
-      <Text style={{ fontSize: 22, opacity: color === "#E8B030" ? 1 : 0.5 }}>⚔️</Text>
-      {badge && (
-        <View style={{
-          position: "absolute", top: -2, right: -2,
-          width: 8, height: 8, borderRadius: 4,
-          backgroundColor: "#FF3B30",
-        }} />
-      )}
-    </View>
-  );
-}
 
 export default function TabLayout() {
   const isIOS = Platform.OS === "ios";
@@ -34,21 +12,22 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: "#E8B030",
-        tabBarInactiveTintColor: "#555555",
+        tabBarInactiveTintColor: "#444444",
         tabBarStyle: {
           position: "absolute",
           backgroundColor: isIOS ? "transparent" : "#000000",
           borderTopWidth: 1,
-          borderTopColor: "#1A1A1A",
+          borderTopColor: "#161616",
           elevation: 0,
           height: Platform.OS === "web" ? 84 : 60 + (isIOS ? 20 : 0),
-          paddingBottom: Platform.OS === "web" ? 34 : isIOS ? 20 : 8,
+          paddingBottom: Platform.OS === "web" ? 30 : isIOS ? 20 : 8,
+          paddingTop: 6,
         },
         tabBarBackground: () =>
           isIOS ? (
-            <BlurView intensity={90} tint="dark" style={StyleSheet.absoluteFill} />
+            <BlurView intensity={100} tint="dark" style={StyleSheet.absoluteFill} />
           ) : (
-            <View style={[StyleSheet.absoluteFill, { backgroundColor: "#000000", borderTopColor: "#1A1A1A", borderTopWidth: 1 }]} />
+            <View style={[StyleSheet.absoluteFill, { backgroundColor: "#000000", borderTopColor: "#161616", borderTopWidth: 1 }]} />
           ),
         tabBarLabelStyle: {
           fontSize: 12,
@@ -60,14 +39,31 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "You",
-          tabBarIcon: ({ color }) => <YouIcon color={color} />,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="happy-outline" size={size + 2} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="battle"
         options={{
           title: "Battle",
-          tabBarIcon: ({ color }) => <BattleIcon color={color} badge />,
+          tabBarIcon: ({ color, size, focused }) => (
+            <View>
+              <Ionicons name="flash-outline" size={size + 2} color={color} />
+              <View style={{
+                position: "absolute",
+                top: -2,
+                right: -4,
+                width: 8,
+                height: 8,
+                borderRadius: 4,
+                backgroundColor: "#FF3B30",
+                borderWidth: 1.5,
+                borderColor: "#000000",
+              }} />
+            </View>
+          ),
         }}
       />
     </Tabs>

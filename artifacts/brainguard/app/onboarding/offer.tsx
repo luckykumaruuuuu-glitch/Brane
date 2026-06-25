@@ -30,7 +30,7 @@ export default function OfferScreen() {
         <View style={styles.offerBlock}>
           <Animated.View style={[styles.mascotPeek, { transform: [{ translateY: mascotSlide }] }]}>
             <Image
-              source={require("../../assets/images/brain-gift2.png")}
+              source={require("../../assets/images/brain-gift2-nobg.png")}
               style={styles.mascot}
               contentFit="contain"
             />

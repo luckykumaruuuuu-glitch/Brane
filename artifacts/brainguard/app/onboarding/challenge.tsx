@@ -41,7 +41,7 @@ export default function ChallengeScreen() {
               <View style={styles.figureHead} />
               <View style={styles.figureBody} />
             </View>
-            <Image source={require("../../assets/images/brain-mascot.png")} style={styles.brainBadge} contentFit="contain" />
+            <Image source={require("../../assets/images/brain-mascot-nobg.png")} style={styles.brainBadge} contentFit="contain" />
           </View>
           <View style={styles.scoreBubble}>
             <Text style={styles.scoreNum}>36</Text>
@@ -59,7 +59,7 @@ export default function ChallengeScreen() {
               <View style={styles.figureHeadRight} />
               <View style={styles.figureBodyRight} />
             </View>
-            <Image source={require("../../assets/images/brain-mascot.png")} style={[styles.brainBadge, styles.brainBadgeRight]} contentFit="contain" />
+            <Image source={require("../../assets/images/brain-mascot-nobg.png")} style={[styles.brainBadge, styles.brainBadgeRight]} contentFit="contain" />
           </View>
           <View style={styles.scoreBubble}>
             <Text style={styles.scoreNum}>93</Text>

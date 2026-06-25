@@ -17,31 +17,31 @@ const SLIDES: Slide[] = [
     headline: "Your brain starts\nfresh everyday",
     counter: "0 reels",
     counterColor: "#5C3010",
-    image: require("../../assets/images/brain-fresh.png"),
+    image: require("../../assets/images/brain-fresh-nobg.png"),
   },
   {
     headline: "Then you start\nscrolling.",
     counter: "9 reels",
     counterColor: "#5C3010",
-    image: require("../../assets/images/brain-scrolling.png"),
+    image: require("../../assets/images/brain-scrolling-nobg.png"),
   },
   {
     headline: "Every reel drains\nyour brain more.",
     counter: "100 reels",
     counterColor: "#5C3010",
-    image: require("../../assets/images/brain-tired.png"),
+    image: require("../../assets/images/brain-tired-nobg.png"),
   },
   {
     headline: "Your ability to\nfocus drops.",
     counter: "500+ reels",
     counterColor: "#6B1A1A",
-    image: require("../../assets/images/brain-grumpy.png"),
+    image: require("../../assets/images/brain-grumpy-nobg.png"),
   },
   {
     headline: "You decide when to stop.\nNot the algorithm.",
     counter: null,
     counterColor: "#5C3010",
-    image: require("../../assets/images/brain-cool.png"),
+    image: require("../../assets/images/brain-cool-nobg.png"),
   },
 ];
 

@@ -1,81 +1,129 @@
 import { Image } from "expo-image";
 import { router } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useApp } from "@/context/AppContext";
 
 const DAYS = ["M", "T", "W", "T", "F", "S", "S"];
-const TODAY_IDX = 3;
 
-function getWeekLabel() {
+function getWeekRange() {
   const now = new Date();
-  const day = now.getDay();
+  const dow = now.getDay();
   const mon = new Date(now);
-  mon.setDate(now.getDate() - ((day + 6) % 7));
+  mon.setDate(now.getDate() - ((dow + 6) % 7));
   const sun = new Date(mon);
   sun.setDate(mon.getDate() + 6);
-  const fmt = (d: Date) =>
-    d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  return `${fmt(mon)} – ${fmt(sun)}`;
+  const mo = mon.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const su = sun.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return `${mo} – ${su}`;
+}
+
+function YouTubeIcon({ size = 36 }: { size?: number }) {
+  return (
+    <View style={[ytS.wrap, { width: size, height: size, borderRadius: size * 0.22 }]}>
+      <View style={[ytS.tri, { borderLeftWidth: size * 0.26, borderTopWidth: size * 0.18, borderBottomWidth: size * 0.18 }]} />
+    </View>
+  );
+}
+const ytS = StyleSheet.create({
+  wrap: { backgroundColor: "#FF0000", alignItems: "center", justifyContent: "center" },
+  tri: { width: 0, height: 0, borderLeftColor: "#FFFFFF", borderTopColor: "transparent", borderBottomColor: "transparent", borderStyle: "solid" },
+});
+
+function InstagramIcon({ size = 36 }: { size?: number }) {
+  return (
+    <View style={{ width: size, height: size, borderRadius: size * 0.22, overflow: "hidden" }}>
+      <LinearGradient
+        colors={["#F9CE34", "#EE2A7B", "#6228D7"]}
+        start={{ x: 1, y: 1 }}
+        end={{ x: 0, y: 0 }}
+        style={{ width: "100%", height: "100%", alignItems: "center", justifyContent: "center" }}
+      >
+        <View style={{ width: size * 0.42, height: size * 0.42, borderRadius: size * 0.42, borderWidth: 2, borderColor: "#FFFFFF" }} />
+        <View style={{ position: "absolute", top: size * 0.14, right: size * 0.14, width: size * 0.12, height: size * 0.12, borderRadius: size * 0.06, backgroundColor: "#FFFFFF" }} />
+      </LinearGradient>
+    </View>
+  );
 }
 
 export default function StatsScreen() {
   const insets = useSafeAreaInsets();
   const { reelCount, weeklyData } = useApp();
   const [weekOffset, setWeekOffset] = useState(0);
-  const weekLabel = getWeekLabel();
+  const weekRange = getWeekRange();
+
+  const CHART_H = 130;
+  const todayIdx = 3; // Thursday (Jun 25, 2026)
+  const chartData = weeklyData.map((v, i) => (i === todayIdx ? reelCount : v));
+  const maxVal = Math.max(...chartData, 1);
 
   const topPad = Platform.OS === "web" ? 48 : insets.top;
-  const bottomPad = Platform.OS === "web" ? 34 : insets.bottom;
-
-  const chartMax = Math.max(...weeklyData, reelCount, 1);
-  const CHART_H = 160;
+  const botPad = Platform.OS === "web" ? 34 : insets.bottom;
 
   return (
-    <View style={[styles.container, { paddingTop: topPad, paddingBottom: bottomPad + 20 }]}>
+    <ScrollView
+      style={[styles.container, { paddingTop: topPad }]}
+      contentContainerStyle={{ paddingBottom: botPad + 32 }}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
-          <Text style={styles.backArrow}>‹</Text>
+          <Ionicons name="chevron-back" size={20} color="#FFFFFF" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>STATS</Text>
       </View>
 
+      {/* Week nav */}
       <View style={styles.weekNav}>
-        <TouchableOpacity onPress={() => setWeekOffset((w) => w - 1)} style={styles.navBtn} activeOpacity={0.7}>
-          <Text style={styles.navArrow}>‹</Text>
+        <TouchableOpacity onPress={() => setWeekOffset((w) => w - 1)} activeOpacity={0.7} style={styles.navBtn}>
+          <Ionicons name="chevron-back" size={18} color="#666666" />
         </TouchableOpacity>
-        <Text style={styles.weekLabel}>{weekLabel}</Text>
-        <TouchableOpacity onPress={() => setWeekOffset((w) => w + 1)} style={styles.navBtn} activeOpacity={0.7}>
-          <Text style={styles.navArrow}>›</Text>
+        <Text style={styles.weekLabel}>{weekRange}</Text>
+        <TouchableOpacity onPress={() => setWeekOffset((w) => w + 1)} activeOpacity={0.7} style={styles.navBtn}>
+          <Ionicons name="chevron-forward" size={18} color="#666666" />
         </TouchableOpacity>
       </View>
 
+      {/* Chart */}
       <View style={styles.chartCard}>
-        <View style={styles.chartArea}>
-          {DAYS.map((day, i) => {
-            const val = i === TODAY_IDX ? reelCount : weeklyData[i] ?? 0;
-            const barH = val > 0 ? Math.max(8, (val / chartMax) * CHART_H) : 0;
-            const isToday = i === TODAY_IDX;
-
+        <View style={styles.chartRow}>
+          {chartData.map((val, i) => {
+            const barH = val > 0 ? Math.max(10, (val / maxVal) * CHART_H) : 0;
+            const isToday = i === todayIdx;
             return (
-              <View key={`${day}-${i}`} style={styles.barCol}>
+              <View key={i} style={styles.barCol}>
                 {isToday && val > 0 && (
-                  <Text style={styles.barValue}>{val}</Text>
+                  <Text style={styles.barLabel}>{val}</Text>
                 )}
-                <View style={styles.barTrack}>
-                  {val > 0 ? (
-                    <View style={[styles.bar, { height: barH, backgroundColor: isToday ? "#E8B030" : "#4A3010" }]} />
-                  ) : null}
+                <View style={[styles.barTrack, { height: CHART_H }]}>
+                  {barH > 0 && (
+                    <View
+                      style={[
+                        styles.bar,
+                        { height: barH, backgroundColor: isToday ? "#E8B030" : "#2D1A00" },
+                      ]}
+                    />
+                  )}
                 </View>
                 {isToday ? (
                   <Image
-                    source={require("../assets/images/brain-tired.png")}
+                    source={require("../assets/images/brain-tired-nobg.png")}
                     style={styles.brainUnder}
                     contentFit="contain"
                   />
                 ) : (
-                  <Text style={styles.dayLabel}>{day}</Text>
+                  <Text style={styles.dayTxt}>{DAYS[i]}</Text>
                 )}
               </View>
             );
@@ -83,61 +131,49 @@ export default function StatsScreen() {
         </View>
       </View>
 
+      {/* Total */}
       <View style={styles.totalCard}>
         <Text style={styles.totalNum}>{reelCount}</Text>
         <Text style={styles.totalLabel}>Total Reels</Text>
       </View>
 
-      <Text style={styles.sectionLabel}>Top apps</Text>
-
+      {/* Top apps */}
+      <Text style={styles.sectionHead}>Top apps</Text>
       <View style={styles.appsCard}>
         <View style={styles.appRow}>
-          <View style={styles.ytIconLg}>
-            <Text style={styles.ytPlayLg}>▶</Text>
-          </View>
+          <YouTubeIcon size={40} />
           <Text style={styles.appName}>YouTube</Text>
           <Text style={styles.appNum}>{Math.max(0, reelCount - 1)}</Text>
         </View>
-        <View style={styles.appDivider} />
+        <View style={styles.divider} />
         <View style={styles.appRow}>
-          <View style={styles.igIconLg}>
-            <Text style={styles.igSymbol}>◉</Text>
-          </View>
+          <InstagramIcon size={40} />
           <Text style={styles.appName}>Instagram</Text>
-          <Text style={styles.appNum}>{Math.min(reelCount, 1)}</Text>
+          <Text style={styles.appNum}>{Math.min(reelCount > 0 ? 1 : 0, 1)}</Text>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#000000",
-    paddingHorizontal: 20,
-  },
+  container: { flex: 1, backgroundColor: "#000000", paddingHorizontal: 20 },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
-    marginBottom: 28,
-    paddingVertical: 8,
+    gap: 14,
+    paddingVertical: 10,
+    marginBottom: 24,
   },
   backBtn: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "#1A1A1A",
+    backgroundColor: "#161616",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "#2A2A2A",
-  },
-  backArrow: {
-    fontSize: 22,
-    color: "#FFFFFF",
-    lineHeight: 26,
+    borderColor: "#252525",
   },
   headerTitle: {
     fontSize: 22,
@@ -149,74 +185,64 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 20,
+    gap: 24,
     marginBottom: 20,
   },
-  navBtn: {
-    padding: 8,
-  },
-  navArrow: {
-    fontSize: 22,
-    color: "#888888",
-  },
+  navBtn: { padding: 6 },
   weekLabel: {
     fontSize: 16,
     fontFamily: "Inter_600SemiBold",
     color: "#FFFFFF",
   },
   chartCard: {
-    backgroundColor: "#111111",
+    backgroundColor: "#0E0E0E",
     borderRadius: 20,
     padding: 20,
-    marginBottom: 16,
+    marginBottom: 14,
   },
-  chartArea: {
+  chartRow: {
     flexDirection: "row",
     alignItems: "flex-end",
-    height: 220,
-    gap: 4,
+    gap: 0,
   },
   barCol: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "flex-end",
-    height: "100%",
   },
-  barValue: {
+  barLabel: {
     fontSize: 13,
     fontFamily: "Inter_600SemiBold",
     color: "#FFFFFF",
     marginBottom: 4,
   },
   barTrack: {
-    flex: 1,
-    width: "80%",
+    width: "70%",
     justifyContent: "flex-end",
   },
   bar: {
     width: "100%",
-    borderRadius: 6,
+    borderRadius: 5,
   },
   brainUnder: {
-    width: 32,
-    height: 32,
+    width: 30,
+    height: 30,
     marginTop: 6,
   },
-  dayLabel: {
+  dayTxt: {
     fontSize: 12,
     fontFamily: "Inter_500Medium",
-    color: "#888888",
+    color: "#555555",
     marginTop: 8,
   },
   totalCard: {
-    backgroundColor: "#111111",
+    backgroundColor: "#0E0E0E",
     borderRadius: 20,
-    padding: 24,
+    paddingVertical: 24,
     alignItems: "center",
     marginBottom: 24,
   },
   totalNum: {
-    fontSize: 40,
+    fontSize: 44,
     fontFamily: "Inter_700Bold",
     color: "#FFFFFF",
     marginBottom: 4,
@@ -224,16 +250,16 @@ const styles = StyleSheet.create({
   totalLabel: {
     fontSize: 14,
     fontFamily: "Inter_400Regular",
-    color: "#888888",
+    color: "#666666",
   },
-  sectionLabel: {
+  sectionHead: {
     fontSize: 16,
     fontFamily: "Inter_600SemiBold",
     color: "#FFFFFF",
     marginBottom: 12,
   },
   appsCard: {
-    backgroundColor: "#111111",
+    backgroundColor: "#0E0E0E",
     borderRadius: 20,
     overflow: "hidden",
   },
@@ -243,30 +269,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     gap: 14,
-  },
-  ytIconLg: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: "#FF0000",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  ytPlayLg: {
-    fontSize: 16,
-    color: "#FFFFFF",
-  },
-  igIconLg: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: "#833AB4",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  igSymbol: {
-    fontSize: 16,
-    color: "#FFFFFF",
   },
   appName: {
     flex: 1,
@@ -279,9 +281,9 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_600SemiBold",
     color: "#FFFFFF",
   },
-  appDivider: {
+  divider: {
     height: 1,
-    backgroundColor: "#1E1E1E",
+    backgroundColor: "#1A1A1A",
     marginHorizontal: 20,
   },
 });

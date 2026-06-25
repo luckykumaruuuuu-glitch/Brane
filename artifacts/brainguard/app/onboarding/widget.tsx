@@ -31,7 +31,7 @@ export default function WidgetScreen() {
           <View style={styles.notch} />
           <View style={styles.homeGrid}>
             <View style={[styles.widgetCell, styles.widgetCellActive]}>
-              <Image source={require("../../assets/images/brain-mascot.png")} style={styles.widgetBrain} contentFit="contain" />
+              <Image source={require("../../assets/images/brain-mascot-nobg.png")} style={styles.widgetBrain} contentFit="contain" />
               <Text style={styles.widgetCount}>56</Text>
               <Text style={styles.widgetLabel}>Reels today</Text>
             </View>

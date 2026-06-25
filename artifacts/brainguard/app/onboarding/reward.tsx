@@ -27,7 +27,7 @@ export default function RewardScreen() {
 
         <Animated.View style={[styles.mascotWrapper, { transform: [{ scale: mascotScale }] }]}>
           <Image
-            source={require("../../assets/images/brain-gift2.png")}
+            source={require("../../assets/images/brain-gift2-nobg.png")}
             style={styles.mascot}
             contentFit="contain"
           />
