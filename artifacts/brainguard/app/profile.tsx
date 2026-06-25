@@ -57,7 +57,7 @@ function MenuItem({
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
-  const { user, setOnboardingComplete } = useApp();
+  const { user, logout } = useApp();
   const timer = useCountdown(9105);
   const topPad = Platform.OS === "web" ? 48 : insets.top;
   const botPad = Platform.OS === "web" ? 34 : insets.bottom;
@@ -69,7 +69,7 @@ export default function ProfileScreen() {
         text: "Logout",
         style: "destructive",
         onPress: async () => {
-          await setOnboardingComplete(false);
+          await logout();
           router.replace("/");
         },
       },

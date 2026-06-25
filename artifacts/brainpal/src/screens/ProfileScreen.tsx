@@ -3,6 +3,7 @@ import brainDazed from "../assets/brain-dazed-nobg.png";
 
 interface Props {
   onBack: () => void;
+  onLogout?: () => void;
   userName?: string;
   userEmail?: string;
   userPhoto?: string;
@@ -68,6 +69,7 @@ function MenuItem({
 
 export default function ProfileScreen({
   onBack,
+  onLogout,
   userName = "Max",
   userEmail = "max785mmaaxx@gmail.com",
   userPhoto,
@@ -259,7 +261,7 @@ export default function ProfileScreen({
               </svg>
             }
             label="Logout"
-            onClick={onBack}
+            onClick={onLogout ?? onBack}
           />
         </div>
 

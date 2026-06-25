@@ -3,22 +3,30 @@ import WarmButton from "@/components/WarmButton";
 import { useApp } from "@/context/AppContext";
 import { router } from "expo-router";
 import React, { useEffect, useRef } from "react";
-import { Animated, Platform, StyleSheet, Text, View } from "react-native";
+import { Animated, Platform, StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 
 export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
-  const { onboardingComplete } = useApp();
+  const { onboardingComplete, user, authLoading } = useApp();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
   const [displayCount, setDisplayCount] = React.useState(38);
 
   useEffect(() => {
-    if (onboardingComplete) {
+    if (authLoading) return;
+
+    if (user && onboardingComplete) {
       router.replace("/(tabs)");
       return;
     }
+
+    if (user && !onboardingComplete) {
+      router.replace("/onboarding/story");
+      return;
+    }
+
     Animated.parallel([
       Animated.timing(fadeAnim, { toValue: 1, duration: 700, useNativeDriver: true }),
       Animated.timing(slideAnim, { toValue: 0, duration: 700, useNativeDriver: true }),
@@ -30,19 +38,41 @@ export default function WelcomeScreen() {
       else { clearInterval(interval); }
     }, 600);
     return () => clearInterval(interval);
-  }, [onboardingComplete]);
+  }, [authLoading, user, onboardingComplete]);
 
-  if (onboardingComplete) return null;
+  if (authLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Image
+          source={require("./assets/images/brain-mascot-nobg.png")}
+          style={styles.splashBrain}
+          contentFit="contain"
+        />
+        <Text style={styles.splashTitle}>BRAIN<Text style={styles.splashTitleDim}>GUARD</Text></Text>
+        <ActivityIndicator color="#E8A030" size="large" style={{ marginTop: 32 }} />
+      </View>
+    );
+  }
+
+  if (user) return null;
 
   const topPad = Platform.OS === "web" ? 52 : insets.top;
   const bottomPad = Platform.OS === "web" ? 34 : insets.bottom;
 
   return (
-    <Animated.View style={[styles.container, { paddingTop: topPad, paddingBottom: bottomPad + 20, opacity: fadeAnim }]}>
+    <Animated.View
+      style={[styles.container, { paddingTop: topPad, paddingBottom: bottomPad + 20, opacity: fadeAnim }]}
+    >
       <View style={styles.topBar}>
         <View style={styles.logoRow}>
-          <Image source={require("../assets/images/brain-mascot-nobg.png")} style={styles.logoIcon} contentFit="contain" />
-          <Text style={styles.logoText}>BRAIN<Text style={styles.logoTextDim}>GUARD</Text></Text>
+          <Image
+            source={require("./assets/images/brain-mascot-nobg.png")}
+            style={styles.logoIcon}
+            contentFit="contain"
+          />
+          <Text style={styles.logoText}>
+            BRAIN<Text style={styles.logoTextDim}>GUARD</Text>
+          </Text>
         </View>
         <View style={styles.langBtn}>
           <Feather name="globe" size={13} color="#DDDDDD" />
@@ -59,7 +89,9 @@ export default function WelcomeScreen() {
                 <Text style={styles.userName}>naru_kumar20</Text>
               </View>
               <View style={styles.reelCaption}>
-                <Text style={styles.reelCaptionText}>Does a delight have so... <Text style={styles.more}>more</Text></Text>
+                <Text style={styles.reelCaptionText}>
+                  Does a delight have so... <Text style={styles.more}>more</Text>
+                </Text>
               </View>
               <View style={styles.reelActions}>
                 <View style={styles.actionItem}>
@@ -76,7 +108,11 @@ export default function WelcomeScreen() {
               </View>
             </View>
             <View style={styles.counterBubble}>
-              <Image source={require("../assets/images/brain-mascot-nobg.png")} style={styles.bubbleBrain} contentFit="contain" />
+              <Image
+                source={require("./assets/images/brain-mascot-nobg.png")}
+                style={styles.bubbleBrain}
+                contentFit="contain"
+              />
               <Text style={styles.counterNum}>{displayCount}</Text>
             </View>
           </View>
@@ -88,10 +124,18 @@ export default function WelcomeScreen() {
         <Text style={styles.headline}>See your reels count</Text>
 
         <View style={styles.socialRow}>
-          <View style={styles.socialIcon}><Feather name="instagram" size={22} color="#666666" /></View>
-          <View style={styles.socialIcon}><FontAwesome name="youtube-play" size={22} color="#666666" /></View>
-          <View style={styles.socialIcon}><FontAwesome name="snapchat-ghost" size={20} color="#666666" /></View>
-          <View style={styles.socialIcon}><FontAwesome name="facebook" size={20} color="#666666" /></View>
+          <View style={styles.socialIcon}>
+            <Feather name="instagram" size={22} color="#666666" />
+          </View>
+          <View style={styles.socialIcon}>
+            <FontAwesome name="youtube-play" size={22} color="#666666" />
+          </View>
+          <View style={styles.socialIcon}>
+            <FontAwesome name="snapchat-ghost" size={20} color="#666666" />
+          </View>
+          <View style={styles.socialIcon}>
+            <FontAwesome name="facebook" size={20} color="#666666" />
+          </View>
         </View>
 
         <WarmButton
@@ -105,35 +149,37 @@ export default function WelcomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  loadingContainer: {
     flex: 1,
     backgroundColor: "#000000",
-    paddingHorizontal: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
   },
+  splashBrain: { width: 80, height: 80 },
+  splashTitle: {
+    fontSize: 28,
+    fontFamily: "Inter_700Bold",
+    color: "#E8A030",
+    letterSpacing: 2,
+  },
+  splashTitleDim: { color: "#D4AF37" },
+  container: { flex: 1, backgroundColor: "#000000", paddingHorizontal: 20 },
   topBar: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 16,
   },
-  logoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  logoIcon: {
-    width: 28,
-    height: 28,
-  },
+  logoRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+  logoIcon: { width: 28, height: 28 },
   logoText: {
     fontSize: 20,
     fontFamily: "Inter_700Bold",
     color: "#E8A030",
     letterSpacing: 1,
   },
-  logoTextDim: {
-    color: "#D4AF37",
-  },
+  logoTextDim: { color: "#D4AF37" },
   langBtn: {
     flexDirection: "row",
     alignItems: "center",
@@ -145,16 +191,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#2A2A2A",
   },
-  langText: {
-    color: "#DDDDDD",
-    fontSize: 13,
-    fontFamily: "Inter_500Medium",
-  },
-  phoneMockupWrapper: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
+  langText: { color: "#DDDDDD", fontSize: 13, fontFamily: "Inter_500Medium" },
+  phoneMockupWrapper: { flex: 1, alignItems: "center", justifyContent: "center" },
   phone: {
     width: 220,
     backgroundColor: "#111111",
@@ -167,23 +205,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 30,
   },
-  phoneInner: {
-    height: 360,
-    backgroundColor: "#1A1A1A",
-    position: "relative",
-  },
-  reelBg: {
-    flex: 1,
-    backgroundColor: "#2A2020",
-    padding: 12,
-    justifyContent: "flex-end",
-  },
-  reelUser: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginBottom: 6,
-  },
+  phoneInner: { height: 360, backgroundColor: "#1A1A1A", position: "relative" },
+  reelBg: { flex: 1, backgroundColor: "#2A2020", padding: 12, justifyContent: "flex-end" },
+  reelUser: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 6 },
   userAvatar: {
     width: 28,
     height: 28,
@@ -192,37 +216,13 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: "#FFFFFF",
   },
-  userName: {
-    color: "#FFFFFF",
-    fontSize: 12,
-    fontFamily: "Inter_600SemiBold",
-  },
-  reelCaption: {
-    marginBottom: 4,
-  },
-  reelCaptionText: {
-    color: "rgba(255,255,255,0.8)",
-    fontSize: 11,
-    fontFamily: "Inter_400Regular",
-  },
-  more: {
-    color: "#CCCCCC",
-  },
-  reelActions: {
-    position: "absolute",
-    right: 10,
-    bottom: 50,
-    gap: 16,
-  },
-  actionItem: {
-    alignItems: "center",
-    gap: 2,
-  },
-  actionCount: {
-    color: "#FFFFFF",
-    fontSize: 10,
-    fontFamily: "Inter_600SemiBold",
-  },
+  userName: { color: "#FFFFFF", fontSize: 12, fontFamily: "Inter_600SemiBold" },
+  reelCaption: { marginBottom: 4 },
+  reelCaptionText: { color: "rgba(255,255,255,0.8)", fontSize: 11, fontFamily: "Inter_400Regular" },
+  more: { color: "#CCCCCC" },
+  reelActions: { position: "absolute", right: 10, bottom: 50, gap: 16 },
+  actionItem: { alignItems: "center", gap: 2 },
+  actionCount: { color: "#FFFFFF", fontSize: 10, fontFamily: "Inter_600SemiBold" },
   counterBubble: {
     position: "absolute",
     top: 16,
@@ -235,42 +235,12 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     gap: 8,
   },
-  bubbleBrain: {
-    width: 30,
-    height: 30,
-  },
-  counterNum: {
-    color: "#FFFFFF",
-    fontSize: 22,
-    fontFamily: "Inter_700Bold",
-  },
-  phoneChin: {
-    height: 18,
-    backgroundColor: "#111111",
-  },
-  bottom: {
-    alignItems: "center",
-    gap: 20,
-    paddingBottom: 8,
-  },
-  headline: {
-    fontSize: 28,
-    fontFamily: "Inter_700Bold",
-    color: "#FFFFFF",
-    textAlign: "center",
-  },
-  socialRow: {
-    flexDirection: "row",
-    gap: 20,
-    alignItems: "center",
-  },
-  socialIcon: {
-    width: 40,
-    height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  btn: {
-    width: "100%",
-  },
+  bubbleBrain: { width: 30, height: 30 },
+  counterNum: { color: "#FFFFFF", fontSize: 22, fontFamily: "Inter_700Bold" },
+  phoneChin: { height: 18, backgroundColor: "#111111" },
+  bottom: { alignItems: "center", gap: 20, paddingBottom: 8 },
+  headline: { fontSize: 28, fontFamily: "Inter_700Bold", color: "#FFFFFF", textAlign: "center" },
+  socialRow: { flexDirection: "row", gap: 20, alignItems: "center" },
+  socialIcon: { width: 40, height: 40, alignItems: "center", justifyContent: "center" },
+  btn: { width: "100%" },
 });
