@@ -2,9 +2,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { Platform } from "react-native";
 
-interface DayStats {
-  date: string;
-  count: number;
+interface UserInfo {
+  displayName: string;
+  email: string;
+  photoURL?: string;
 }
 
 interface AppContextType {
@@ -19,6 +20,8 @@ interface AppContextType {
   productivityScore: number;
   focusScore: number;
   scrollRisk: "Low" | "Medium" | "High";
+  user: UserInfo | null;
+  setUser: (u: UserInfo | null) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -28,6 +31,7 @@ const STORAGE_KEYS = {
   TODAY_COUNT: "brainguard_today_count",
   TODAY_DATE: "brainguard_today_date",
   WEEKLY_DATA: "brainguard_weekly_data",
+  USER: "brainguard_user",
 };
 
 function getTodayString() {
@@ -38,16 +42,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [onboardingComplete, setOnboardingCompleteState] = useState(Platform.OS === "web");
   const [reelCount, setReelCount] = useState(56);
   const [weeklyData, setWeeklyData] = useState([32, 45, 67, 41, 89, 56, 72]);
+  const [user, setUserState] = useState<UserInfo | null>({
+    displayName: "BrainGuard User",
+    email: "user@gmail.com",
+  });
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     async function load() {
       try {
-        const [onboarding, count, date, weekly] = await Promise.all([
+        const [onboarding, count, date, weekly, userData] = await Promise.all([
           AsyncStorage.getItem(STORAGE_KEYS.ONBOARDING),
           AsyncStorage.getItem(STORAGE_KEYS.TODAY_COUNT),
           AsyncStorage.getItem(STORAGE_KEYS.TODAY_DATE),
           AsyncStorage.getItem(STORAGE_KEYS.WEEKLY_DATA),
+          AsyncStorage.getItem(STORAGE_KEYS.USER),
         ]);
 
         if (onboarding !== null) setOnboardingCompleteState(onboarding === "true");
@@ -61,9 +70,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           setReelCount(56);
         }
 
-        if (weekly) {
-          setWeeklyData(JSON.parse(weekly));
-        }
+        if (weekly) setWeeklyData(JSON.parse(weekly));
+        if (userData) setUserState(JSON.parse(userData));
       } catch (_) {}
       setLoaded(true);
     }
@@ -73,6 +81,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const setOnboardingComplete = useCallback(async (val: boolean) => {
     setOnboardingCompleteState(val);
     await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDING, val ? "true" : "false");
+  }, []);
+
+  const setUser = useCallback(async (u: UserInfo | null) => {
+    setUserState(u);
+    if (u) {
+      await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(u));
+    } else {
+      await AsyncStorage.removeItem(STORAGE_KEYS.USER);
+    }
   }, []);
 
   const incrementReel = useCallback(async () => {
@@ -90,7 +107,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const monthlyTotal = weeklyData.reduce((a, b) => a + b, 0) * 4 + reelCount;
   const timeWasted = Math.round((reelCount * 0.5) * 10) / 10;
-
   const avgDaily = weeklyData.reduce((a, b) => a + b, 0) / 7;
   const productivityScore = Math.max(10, Math.min(100, Math.round(100 - (reelCount / 120) * 100)));
   const focusScore = Math.max(10, Math.min(100, Math.round(100 - (avgDaily / 100) * 60)));
@@ -113,6 +129,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         productivityScore,
         focusScore,
         scrollRisk,
+        user,
+        setUser,
       }}
     >
       {children}

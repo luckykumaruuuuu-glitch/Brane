@@ -67,6 +67,7 @@ export default function RootLayout() {
                   <Stack.Screen name="onboarding/subscription" />
                   <Stack.Screen name="onboarding/instagram" />
                   <Stack.Screen name="stats" options={{ animation: "slide_from_right" }} />
+                  <Stack.Screen name="profile" options={{ animation: "slide_from_right" }} />
                   <Stack.Screen name="(tabs)" options={{ animation: "fade" }} />
                 </Stack>
               </AppProvider>
