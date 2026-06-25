@@ -1,224 +1,200 @@
-import GoldButton from "@/components/GoldButton";
+import { Image } from "expo-image";
+import WarmButton from "@/components/WarmButton";
 import { router } from "expo-router";
-import React, { useRef, useEffect } from "react";
-import { Animated, Image, Platform, StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
+import React, { useRef, useEffect } from "react";
+import { Animated, Platform, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ChallengeScreen() {
   const insets = useSafeAreaInsets();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideLeft = useRef(new Animated.Value(-40)).current;
-  const slideRight = useRef(new Animated.Value(40)).current;
+  const leftSlide = useRef(new Animated.Value(-60)).current;
+  const rightSlide = useRef(new Animated.Value(60)).current;
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
-      Animated.timing(slideLeft, { toValue: 0, duration: 700, useNativeDriver: true }),
-      Animated.timing(slideRight, { toValue: 0, duration: 700, useNativeDriver: true }),
+      Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
+      Animated.spring(leftSlide, { toValue: 0, useNativeDriver: true, tension: 60, friction: 10 }),
+      Animated.spring(rightSlide, { toValue: 0, useNativeDriver: true, tension: 60, friction: 10 }),
     ]).start();
-  }, [fadeAnim, slideLeft, slideRight]);
+  }, [fadeAnim, leftSlide, rightSlide]);
 
-  const topPad = Platform.OS === "web" ? 67 : insets.top;
+  const topPad = Platform.OS === "web" ? 60 : insets.top;
   const bottomPad = Platform.OS === "web" ? 34 : insets.bottom;
 
   return (
-    <View style={[styles.container, { paddingTop: topPad + 20, paddingBottom: bottomPad + 20 }]}>
-      <Animated.View style={{ opacity: fadeAnim, width: "100%", alignItems: "center" }}>
-        <View style={styles.progressRow}>
-          {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-            <View key={i} style={[styles.dot, i === 4 && styles.dotActive]} />
-          ))}
-        </View>
-
-        <Text style={styles.eyebrow}>Challenge</Text>
-        <Text style={styles.headline}>Battle your friends</Text>
-        <Text style={styles.subtitle}>Who can watch fewer reels?</Text>
+    <LinearGradient
+      colors={["#3D1800", "#1A0800", "#000000"]}
+      locations={[0, 0.5, 1]}
+      style={[styles.container, { paddingTop: topPad + 32, paddingBottom: bottomPad + 20 }]}
+    >
+      <Animated.View style={{ opacity: fadeAnim, alignItems: "center" }}>
+        <Text style={styles.eyebrow}>Flex your scroll count</Text>
+        <Text style={styles.headline}>CHALLENGE{"\n"}FRIENDS</Text>
       </Animated.View>
 
-      <View style={styles.battle}>
-        <Animated.View style={[styles.playerCard, { transform: [{ translateX: slideLeft }], opacity: fadeAnim }]}>
-          <LinearGradient colors={["#D4AF37", "#8B7322"]} style={styles.playerGradient}>
-            <View style={styles.avatarCircle}>
-              <Text style={styles.avatarText}>Y</Text>
+      <View style={styles.battleArea}>
+        <Animated.View style={[styles.fighter, { transform: [{ translateX: leftSlide }], opacity: fadeAnim }]}>
+          <View style={styles.figureBox}>
+            <View style={styles.figurePlaceholder}>
+              <View style={styles.figureHead} />
+              <View style={styles.figureBody} />
             </View>
-            <Text style={styles.playerLabel}>You</Text>
-            <Text style={styles.playerCount}>36</Text>
-            <Text style={styles.playerUnit}>reels</Text>
-          </LinearGradient>
-        </Animated.View>
-
-        <Animated.View style={[styles.vsContainer, { opacity: fadeAnim }]}>
-          <Text style={styles.vs}>VS</Text>
-        </Animated.View>
-
-        <Animated.View style={[styles.playerCard, { transform: [{ translateX: slideRight }], opacity: fadeAnim }]}>
-          <View style={[styles.playerGradient, styles.friendCard]}>
-            <View style={[styles.avatarCircle, styles.friendAvatar]}>
-              <Text style={styles.avatarText}>F</Text>
-            </View>
-            <Text style={[styles.playerLabel, styles.friendLabel]}>Friend</Text>
-            <Text style={[styles.playerCount, styles.friendCount]}>93</Text>
-            <Text style={[styles.playerUnit, styles.friendUnit]}>reels</Text>
+            <Image source={require("../../assets/images/brain-mascot.png")} style={styles.brainBadge} contentFit="contain" />
           </View>
+          <View style={styles.scoreBubble}>
+            <Text style={styles.scoreNum}>36</Text>
+          </View>
+          <Text style={styles.fighterLabel}>YOU</Text>
         </Animated.View>
-      </View>
 
-      <View style={styles.winBanner}>
-        <Text style={styles.winText}>You're winning by 57 reels!</Text>
+        <View style={styles.vsArea}>
+          <Text style={styles.lightning}>⚡</Text>
+        </View>
+
+        <Animated.View style={[styles.fighter, { transform: [{ translateX: rightSlide }], opacity: fadeAnim }]}>
+          <View style={styles.figureBox}>
+            <View style={[styles.figurePlaceholder, styles.figurePlaceholderRight]}>
+              <View style={styles.figureHeadRight} />
+              <View style={styles.figureBodyRight} />
+            </View>
+            <Image source={require("../../assets/images/brain-mascot.png")} style={[styles.brainBadge, styles.brainBadgeRight]} contentFit="contain" />
+          </View>
+          <View style={styles.scoreBubble}>
+            <Text style={styles.scoreNum}>93</Text>
+          </View>
+          <Text style={styles.fighterLabel}>FRIEND</Text>
+        </Animated.View>
       </View>
 
       <View style={styles.buttons}>
-        <GoldButton
-          label="Challenge Your Friend"
+        <WarmButton
+          label="  Challenge Your Friend"
           onPress={() => router.push("/onboarding/reward")}
           style={styles.btn}
+          icon={<Text style={{ fontSize: 16 }}>✕</Text>}
         />
-        <GoldButton
+        <WarmButton
           label="I'll Do It Later"
           variant="ghost"
           onPress={() => router.push("/onboarding/reward")}
           style={styles.btn}
         />
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000000",
     paddingHorizontal: 24,
     alignItems: "center",
   },
-  progressRow: {
-    flexDirection: "row",
-    gap: 6,
-    marginBottom: 28,
-  },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: "#2A2A2A",
-  },
-  dotActive: {
-    backgroundColor: "#D4AF37",
-    width: 20,
-    borderRadius: 3,
-  },
   eyebrow: {
     fontSize: 13,
-    fontFamily: "Inter_600SemiBold",
-    color: "#D4AF37",
-    letterSpacing: 2,
-    textTransform: "uppercase",
+    fontFamily: "Inter_400Regular",
+    color: "#C4A060",
+    letterSpacing: 1,
     marginBottom: 8,
   },
   headline: {
-    fontSize: 32,
+    fontSize: 42,
     fontFamily: "Inter_700Bold",
     color: "#FFFFFF",
     textAlign: "center",
-    marginBottom: 6,
+    lineHeight: 48,
+    marginBottom: 32,
   },
-  subtitle: {
-    fontSize: 15,
-    fontFamily: "Inter_400Regular",
-    color: "#888888",
-    textAlign: "center",
-    marginBottom: 12,
-  },
-  battle: {
+  battleArea: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 16,
+    gap: 0,
+    width: "100%",
   },
-  playerCard: {
+  fighter: {
     flex: 1,
-    borderRadius: 24,
-    overflow: "hidden",
-  },
-  playerGradient: {
-    padding: 24,
     alignItems: "center",
-    borderRadius: 24,
-    minHeight: 200,
-    justifyContent: "center",
+    gap: 12,
   },
-  friendCard: {
-    backgroundColor: "#1A1A1A",
-    borderWidth: 1,
-    borderColor: "#2A2A2A",
-  },
-  avatarCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "rgba(0,0,0,0.3)",
+  figureBox: {
+    position: "relative",
+    width: 100,
+    height: 140,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 12,
   },
-  friendAvatar: {
-    backgroundColor: "#2A2A2A",
+  figurePlaceholder: {
+    alignItems: "center",
+    gap: 4,
   },
-  avatarText: {
-    fontSize: 24,
+  figureHead: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "#5A4030",
+    marginBottom: 4,
+  },
+  figureBody: {
+    width: 60,
+    height: 70,
+    borderRadius: 12,
+    backgroundColor: "#3A2A1A",
+  },
+  figurePlaceholderRight: {},
+  figureHeadRight: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "#5A4035",
+    marginBottom: 4,
+  },
+  figureBodyRight: {
+    width: 60,
+    height: 70,
+    borderRadius: 12,
+    backgroundColor: "#3A2A1F",
+  },
+  brainBadge: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    width: 36,
+    height: 36,
+  },
+  brainBadgeRight: {
+    left: 0,
+    right: undefined,
+  },
+  scoreBubble: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "#F5DC8E",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  scoreNum: {
+    fontSize: 16,
+    fontFamily: "Inter_700Bold",
+    color: "#5A3A00",
+  },
+  fighterLabel: {
+    fontSize: 14,
     fontFamily: "Inter_700Bold",
     color: "#FFFFFF",
+    letterSpacing: 2,
   },
-  playerLabel: {
-    fontSize: 14,
-    fontFamily: "Inter_600SemiBold",
-    color: "rgba(0,0,0,0.7)",
-    marginBottom: 8,
-  },
-  playerCount: {
-    fontSize: 48,
-    fontFamily: "Inter_700Bold",
-    color: "#000000",
-    lineHeight: 52,
-  },
-  playerUnit: {
-    fontSize: 13,
-    fontFamily: "Inter_400Regular",
-    color: "rgba(0,0,0,0.6)",
-  },
-  friendLabel: {
-    color: "#888888",
-  },
-  friendCount: {
-    color: "#FF4444",
-  },
-  friendUnit: {
-    color: "#555555",
-  },
-  vsContainer: {
+  vsArea: {
     alignItems: "center",
     justifyContent: "center",
+    paddingHorizontal: 8,
   },
-  vs: {
-    fontSize: 20,
-    fontFamily: "Inter_700Bold",
-    color: "#555555",
-  },
-  winBanner: {
-    backgroundColor: "#1E3A1E",
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    marginBottom: 28,
-    borderWidth: 1,
-    borderColor: "#2D5A2D",
-  },
-  winText: {
-    color: "#4CAF50",
-    fontSize: 14,
-    fontFamily: "Inter_600SemiBold",
+  lightning: {
+    fontSize: 48,
   },
   buttons: {
     width: "100%",

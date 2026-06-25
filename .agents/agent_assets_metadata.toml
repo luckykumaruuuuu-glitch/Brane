@@ -24,3 +24,63 @@ id = "ujN4TpTp-Nm_LVwaQju0q"
 uri = "file://artifacts/brainguard/assets/images/brain-lock.png"
 type = "image"
 title = "brain mascot lock"
+
+[[generated]]
+id = "fNmL-Q4FQ7VQ82Uacz6Es"
+uri = "file://artifacts/brainguard/assets/images/brain-fresh.png"
+type = "image"
+title = "fresh happy brain"
+
+[[generated]]
+id = "QIAxCuRrMSQ_wAqB6vNEA"
+uri = "file://artifacts/brainguard/assets/images/brain-scrolling.png"
+type = "image"
+title = "scrolling addicted brain"
+
+[[generated]]
+id = "cuY3OPtyL3eCKysNfvMqB"
+uri = "file://artifacts/brainguard/assets/images/brain-tired.png"
+type = "image"
+title = "tired drained brain"
+
+[[generated]]
+id = "dZtzHngoECQLrXeUF7i1V"
+uri = "file://artifacts/brainguard/assets/images/brain-grumpy.png"
+type = "image"
+title = "grumpy focus-lost brain"
+
+[[generated]]
+id = "riAAwyJXcnBwMh8ZbHDoh"
+uri = "file://artifacts/brainguard/assets/images/brain-cool.png"
+type = "image"
+title = "cool brain with sunglasses"
+
+[[generated]]
+id = "NOC1vFw_-EX4RFirSSlCk"
+uri = "file://artifacts/brainguard/assets/images/brain-star.png"
+type = "image"
+title = "star-eyed excited brain"
+
+[[generated]]
+id = "wAJG_QU091yO9Ohps-men"
+uri = "file://artifacts/brainguard/assets/images/brain-sleep.png"
+type = "image"
+title = "sleeping brain"
+
+[[generated]]
+id = "dASPfw7R7QY1K5sBVNoVW"
+uri = "file://artifacts/brainguard/assets/images/brain-reading.png"
+type = "image"
+title = "reading brain"
+
+[[generated]]
+id = "4EV3Ap7BDa0ru2AhwEW8D"
+uri = "file://artifacts/brainguard/assets/images/brain-meditate.png"
+type = "image"
+title = "meditating brain"
+
+[[generated]]
+id = "7IAA287SzBf5TY5l05zBU"
+uri = "file://artifacts/brainguard/assets/images/brain-gift2.png"
+type = "image"
+title = "brain holding gift"

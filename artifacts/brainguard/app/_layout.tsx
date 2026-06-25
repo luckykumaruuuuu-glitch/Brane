@@ -18,7 +18,6 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AppProvider } from "@/context/AppContext";
 
 SplashScreen.preventAutoHideAsync();
-
 SystemUI.setBackgroundColorAsync("#000000");
 
 const queryClient = new QueryClient();
@@ -54,11 +53,16 @@ export default function RootLayout() {
                   }}
                 >
                   <Stack.Screen name="index" />
+                  <Stack.Screen name="onboarding/signin" options={{ animation: "slide_from_bottom" }} />
+                  <Stack.Screen name="onboarding/story" />
+                  <Stack.Screen name="onboarding/benefits" />
+                  <Stack.Screen name="onboarding/rating" />
                   <Stack.Screen name="onboarding/widget" />
                   <Stack.Screen name="onboarding/privacy" />
                   <Stack.Screen name="onboarding/permissions" />
                   <Stack.Screen name="onboarding/challenge" />
                   <Stack.Screen name="onboarding/reward" />
+                  <Stack.Screen name="onboarding/offer" />
                   <Stack.Screen name="onboarding/discount" />
                   <Stack.Screen name="onboarding/subscription" />
                   <Stack.Screen name="onboarding/instagram" />

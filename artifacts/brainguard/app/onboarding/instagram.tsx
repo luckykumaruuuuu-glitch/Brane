@@ -1,5 +1,5 @@
-import GoldButton from "@/components/GoldButton";
-import BrainMascot from "@/components/BrainMascot";
+import { Image } from "expo-image";
+import WarmButton from "@/components/WarmButton";
 import { useApp } from "@/context/AppContext";
 import { router } from "expo-router";
 import React, { useRef, useEffect } from "react";
@@ -11,75 +11,58 @@ export default function InstagramScreen() {
   const insets = useSafeAreaInsets();
   const { setOnboardingComplete } = useApp();
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const mascotSlide = useRef(new Animated.Value(-40)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }).start();
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
+      Animated.spring(mascotSlide, { toValue: 0, useNativeDriver: true, tension: 60, friction: 10 }),
+    ]).start();
 
     Animated.loop(
       Animated.sequence([
-        Animated.timing(pulseAnim, { toValue: 1.08, duration: 800, useNativeDriver: true }),
-        Animated.timing(pulseAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 1.06, duration: 900, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 1, duration: 900, useNativeDriver: true }),
       ])
     ).start();
-  }, [fadeAnim, pulseAnim]);
+  }, [fadeAnim, mascotSlide, pulseAnim]);
 
   const handleFinish = async () => {
     await setOnboardingComplete(true);
     router.replace("/(tabs)");
   };
 
-  const topPad = Platform.OS === "web" ? 67 : insets.top;
+  const topPad = Platform.OS === "web" ? 60 : insets.top;
   const bottomPad = Platform.OS === "web" ? 34 : insets.bottom;
 
   return (
-    <Animated.View style={[styles.container, { paddingTop: topPad + 20, paddingBottom: bottomPad + 20, opacity: fadeAnim }]}>
-      <View style={styles.progressRow}>
-        {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-          <View key={i} style={[styles.dot, i === 8 && styles.dotActive]} />
-        ))}
-      </View>
+    <Animated.View style={[styles.container, { paddingTop: topPad + 40, paddingBottom: bottomPad + 20, opacity: fadeAnim }]}>
+      <Text style={styles.headline}>
+        Open <Text style={styles.igWord}>Instagram</Text> to see{"\n"}BrainGuard in action
+      </Text>
 
-      <View style={styles.content}>
-        <BrainMascot size={120} variant="default" animate />
+      <View style={styles.cardBlock}>
+        <Animated.View style={[styles.mascotPeek, { transform: [{ translateY: mascotSlide }] }]}>
+          <Image
+            source={require("../../assets/images/brain-mascot.png")}
+            style={styles.mascot}
+            contentFit="contain"
+          />
+        </Animated.View>
 
-        <Text style={styles.headline}>See BrainGuard{"\n"}in action</Text>
-        <Text style={styles.subtitle}>Open Instagram and scroll a few reels. Watch BrainGuard count them in real-time.</Text>
-
-        <View style={styles.demoCard}>
-          <View style={styles.demoRow}>
-            <View style={styles.brainBubble}>
-              <BrainMascot size={28} variant="default" animate={false} />
-              <Text style={styles.bubbleCount}>0</Text>
-            </View>
-            <Text style={styles.demoArrow}>→</Text>
-            <View style={styles.igIcon}>
-              <Feather name="instagram" size={28} color="#FFFFFF" />
-            </View>
-            <Text style={styles.demoArrow}>→</Text>
-            <View style={styles.brainBubble}>
-              <BrainMascot size={28} variant="default" animate={false} />
-              <Text style={styles.bubbleCount}>5</Text>
-            </View>
+        <View style={styles.card}>
+          <View style={styles.igLogo}>
+            <Feather name="instagram" size={40} color="#FFFFFF" />
           </View>
-          <Text style={styles.demoCaption}>Reels detected and counted automatically</Text>
         </View>
       </View>
 
-      <Animated.View style={[styles.igBtnWrapper, { transform: [{ scale: pulseAnim }] }]}>
-        <GoldButton
-          label="Open Instagram"
-          onPress={handleFinish}
-          style={{ width: "100%" }}
-        />
-      </Animated.View>
-
-      <GoldButton
-        label="Skip — Go to Dashboard"
-        variant="ghost"
-        onPress={handleFinish}
-        style={{ width: "100%" }}
-      />
+      <View style={styles.buttons}>
+        <Animated.View style={[{ width: "100%" }, { transform: [{ scale: pulseAnim }] }]}>
+          <WarmButton label="Open Instagram" onPress={handleFinish} style={{ width: "100%" }} />
+        </Animated.View>
+      </View>
     </Animated.View>
   );
 }
@@ -91,93 +74,56 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     alignItems: "center",
   },
-  progressRow: {
-    flexDirection: "row",
-    gap: 6,
-    marginBottom: 20,
+  headline: {
+    fontSize: 30,
+    fontFamily: "Inter_700Bold",
+    color: "#FFFFFF",
+    textAlign: "center",
+    lineHeight: 40,
+    marginBottom: 40,
   },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: "#2A2A2A",
+  igWord: {
+    color: "#E8B030",
   },
-  dotActive: {
-    backgroundColor: "#D4AF37",
-    width: 20,
-    borderRadius: 3,
-  },
-  content: {
+  cardBlock: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    gap: 20,
-  },
-  headline: {
-    fontSize: 34,
-    fontFamily: "Inter_700Bold",
-    color: "#FFFFFF",
-    textAlign: "center",
-    lineHeight: 42,
-  },
-  subtitle: {
-    fontSize: 15,
-    fontFamily: "Inter_400Regular",
-    color: "#888888",
-    textAlign: "center",
-    lineHeight: 22,
-    paddingHorizontal: 16,
-  },
-  demoCard: {
-    backgroundColor: "#111111",
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#2A2A2A",
-    padding: 24,
-    alignItems: "center",
-    gap: 12,
     width: "100%",
   },
-  demoRow: {
-    flexDirection: "row",
+  mascotPeek: {
+    zIndex: 2,
+    marginBottom: -40,
+  },
+  mascot: {
+    width: 100,
+    height: 100,
+  },
+  card: {
+    width: "80%",
+    height: 180,
+    backgroundColor: "#111111",
+    borderRadius: 24,
     alignItems: "center",
-    gap: 16,
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#2A2A2A",
+    zIndex: 1,
   },
-  brainBubble: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#8B4513",
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    gap: 6,
-  },
-  bubbleCount: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontFamily: "Inter_700Bold",
-  },
-  igIcon: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
+  igLogo: {
+    width: 72,
+    height: 72,
+    borderRadius: 22,
     backgroundColor: "#833AB4",
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: "#833AB4",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.5,
+    shadowRadius: 16,
   },
-  demoArrow: {
-    fontSize: 18,
-    color: "#555555",
-    fontFamily: "Inter_400Regular",
-  },
-  demoCaption: {
-    fontSize: 13,
-    fontFamily: "Inter_400Regular",
-    color: "#555555",
-    textAlign: "center",
-  },
-  igBtnWrapper: {
+  buttons: {
     width: "100%",
-    marginBottom: 8,
+    gap: 10,
   },
 });

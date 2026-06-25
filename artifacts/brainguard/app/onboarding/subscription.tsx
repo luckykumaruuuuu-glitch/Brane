@@ -1,273 +1,374 @@
-import GoldButton from "@/components/GoldButton";
+import WarmButton from "@/components/WarmButton";
 import { router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useRef, useEffect, useState } from "react";
-import { Animated, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Animated, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 
-const FEATURES = [
-  { icon: "activity" as const, text: "Unlimited reel tracking" },
-  { icon: "bar-chart-2" as const, text: "Daily & weekly reports" },
-  { icon: "users" as const, text: "Friend challenges" },
-  { icon: "cpu" as const, text: "AI-powered insights" },
-];
-
 type Plan = "yearly" | "monthly";
+
+function useCountdown(initial: number) {
+  const [s, setS] = useState(initial);
+  useEffect(() => {
+    const t = setInterval(() => setS((x) => (x > 0 ? x - 1 : 0)), 1000);
+    return () => clearInterval(t);
+  }, []);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+}
 
 export default function SubscriptionScreen() {
   const insets = useSafeAreaInsets();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const [selected, setSelected] = useState<Plan>("yearly");
+  const [plan, setPlan] = useState<Plan>("yearly");
+  const timer = useCountdown(10761);
 
   useEffect(() => {
-    Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }).start();
+    Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }).start();
   }, [fadeAnim]);
 
-  const topPad = Platform.OS === "web" ? 67 : insets.top;
+  const topPad = Platform.OS === "web" ? 52 : insets.top;
   const bottomPad = Platform.OS === "web" ? 34 : insets.bottom;
 
   return (
-    <Animated.View style={[styles.container, { paddingTop: topPad + 20, paddingBottom: bottomPad + 20, opacity: fadeAnim }]}>
-      <View style={styles.progressRow}>
-        {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-          <View key={i} style={[styles.dot, i === 7 && styles.dotActive]} />
-        ))}
+    <Animated.ScrollView
+      style={[styles.container, { opacity: fadeAnim }]}
+      contentContainerStyle={{ paddingTop: topPad + 20, paddingBottom: bottomPad + 20 }}
+      showsVerticalScrollIndicator={false}
+    >
+      <View style={styles.topBar}>
+        <TouchableOpacity onPress={() => router.push("/onboarding/instagram")} style={styles.closeBtn} activeOpacity={0.7}>
+          <Feather name="x" size={20} color="#888888" />
+        </TouchableOpacity>
+        <View style={styles.brandRow}>
+          <Text style={styles.brandText}>BRAINGUARD</Text>
+          <View style={styles.proBadge}><Text style={styles.proText}>PRO</Text></View>
+        </View>
+        <TouchableOpacity activeOpacity={0.7}>
+          <Text style={styles.helpText}>Need Help?</Text>
+        </TouchableOpacity>
       </View>
 
-      <Text style={styles.eyebrow}>Premium</Text>
-      <Text style={styles.headline}>Start your free trial</Text>
-      <Text style={styles.subtitle}>7 days free, then choose your plan</Text>
+      <View style={styles.ticketWrapper}>
+        <LinearGradient colors={["#F5DC8E", "#D4A020"]} style={styles.ticket}>
+          <View style={styles.ticketDecor}>
+            <Text style={styles.ticketDecorL}>🌿</Text>
+            <Text style={styles.ticketDecorR}>🌿</Text>
+          </View>
+          <Text style={styles.ticketPct}>70%</Text>
+          <Text style={styles.ticketLabel}>Discount</Text>
+          <View style={styles.ticketNotchRow}>
+            <View style={styles.ticketNotch} />
+            <View style={styles.ticketDash} />
+            <View style={styles.ticketNotch} />
+          </View>
+          <View style={styles.timerPill}>
+            <Text style={styles.timerText}>Ends in {timer}</Text>
+          </View>
+        </LinearGradient>
+      </View>
+
+      <Text style={styles.headline}>Block doom scrolling.{"\n"}Get back to what matters.</Text>
+
+      <View style={styles.reviewCard}>
+        <View style={styles.reviewAvatar}><Text style={styles.reviewAvatarText}>A</Text></View>
+        <View style={styles.reviewInfo}>
+          <Text style={styles.reviewName}>Aryan Muk...</Text>
+          <Text style={styles.reviewStars}>★ ★ ★ ★ ★</Text>
+        </View>
+      </View>
 
       <View style={styles.plans}>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => setSelected("yearly")}
-          style={[styles.planCard, selected === "yearly" && styles.planCardActive]}
-        >
-          {selected === "yearly" && (
-            <LinearGradient colors={["#D4AF37", "#8B7322"]} style={styles.planBadge}>
-              <Text style={styles.planBadgeText}>BEST VALUE</Text>
-            </LinearGradient>
+        <TouchableOpacity onPress={() => setPlan("yearly")} style={[styles.planCard, plan === "yearly" && styles.planActive]} activeOpacity={0.8}>
+          {plan === "yearly" && (
+            <View style={styles.planBadge}><Text style={styles.planBadgeText}>70% OFF</Text></View>
           )}
-          <View style={styles.planRow}>
-            <View style={[styles.radioOuter, selected === "yearly" && styles.radioOuterActive]}>
-              {selected === "yearly" && <View style={styles.radioInner} />}
-            </View>
+          <View style={styles.planBody}>
             <View style={styles.planInfo}>
-              <Text style={[styles.planName, selected === "yearly" && styles.planNameActive]}>Yearly</Text>
-              <Text style={styles.planSaving}>Save 75%</Text>
+              <Text style={styles.planName}>Yearly</Text>
+              <Text style={styles.planSub}>₹999 → ₹299/year</Text>
             </View>
-            <View style={styles.planPricing}>
-              <Text style={[styles.planPrice, selected === "yearly" && styles.planPriceActive]}>₹299</Text>
-              <Text style={styles.planPeriod}>/year</Text>
+            <View style={styles.planRight}>
+              <Text style={[styles.planPrice, plan === "yearly" && styles.planPriceActive]}>₹25/month</Text>
             </View>
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => setSelected("monthly")}
-          style={[styles.planCard, selected === "monthly" && styles.planCardActive]}
-        >
-          <View style={styles.planRow}>
-            <View style={[styles.radioOuter, selected === "monthly" && styles.radioOuterActive]}>
-              {selected === "monthly" && <View style={styles.radioInner} />}
-            </View>
+        <TouchableOpacity onPress={() => setPlan("monthly")} style={[styles.planCard, plan === "monthly" && styles.planActive]} activeOpacity={0.8}>
+          <View style={styles.planBody}>
             <View style={styles.planInfo}>
-              <Text style={[styles.planName, selected === "monthly" && styles.planNameActive]}>Monthly</Text>
-              <Text style={styles.planSaving}>Flexible</Text>
+              <Text style={styles.planName}>Monthly</Text>
             </View>
-            <View style={styles.planPricing}>
-              <Text style={[styles.planPrice, selected === "monthly" && styles.planPriceActive]}>₹99</Text>
-              <Text style={styles.planPeriod}>/month</Text>
+            <View style={styles.planRight}>
+              <Text style={[styles.planPrice, plan === "monthly" && styles.planPriceActive]}>₹99/month</Text>
             </View>
           </View>
         </TouchableOpacity>
       </View>
 
-      <View style={styles.features}>
-        {FEATURES.map((f, i) => (
-          <View key={i} style={styles.featureRow}>
-            <View style={styles.featureIcon}>
-              <Feather name={f.icon} size={14} color="#D4AF37" />
-            </View>
-            <Text style={styles.featureText}>{f.text}</Text>
-          </View>
-        ))}
+      <View style={styles.payRow}>
+        <View style={styles.phonepeRow}>
+          <View style={styles.phonepeDot} />
+          <Text style={styles.payUsing}>Pay Using</Text>
+          <Feather name="chevron-down" size={14} color="#AAAAAA" />
+          <Text style={styles.phonepeText}>PhonePe</Text>
+        </View>
+
+        <WarmButton label="Continue" onPress={() => router.push("/onboarding/instagram")} style={styles.continueBtn} />
       </View>
 
-      <GoldButton
-        label="Start Free Trial"
-        onPress={() => router.push("/onboarding/instagram")}
-        style={styles.btn}
-      />
-      <Text style={styles.legal}>Cancel anytime • Supports PhonePe, UPI & Cards</Text>
-    </Animated.View>
+      <Text style={styles.legal}>Billed Annually · Cancel Anytime</Text>
+    </Animated.ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000000",
-    paddingHorizontal: 24,
-    alignItems: "center",
+    backgroundColor: "#0A0A0A",
+    paddingHorizontal: 20,
   },
-  progressRow: {
+  topBar: {
     flexDirection: "row",
-    gap: 6,
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 20,
   },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: "#2A2A2A",
+  closeBtn: {
+    width: 36,
+    height: 36,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  dotActive: {
-    backgroundColor: "#D4AF37",
-    width: 20,
-    borderRadius: 3,
+  brandRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
-  eyebrow: {
+  brandText: {
+    fontSize: 16,
+    fontFamily: "Inter_700Bold",
+    color: "#E8B030",
+  },
+  proBadge: {
+    backgroundColor: "#1A1A1A",
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderWidth: 1,
+    borderColor: "#E8B030",
+  },
+  proText: {
+    fontSize: 11,
+    fontFamily: "Inter_700Bold",
+    color: "#E8B030",
+  },
+  helpText: {
     fontSize: 13,
-    fontFamily: "Inter_600SemiBold",
-    color: "#D4AF37",
-    letterSpacing: 2,
-    textTransform: "uppercase",
-    marginBottom: 8,
+    fontFamily: "Inter_400Regular",
+    color: "#888888",
+    textDecorationLine: "underline",
+  },
+  ticketWrapper: {
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  ticket: {
+    borderRadius: 20,
+    padding: 28,
+    alignItems: "center",
+    width: "90%",
+    position: "relative",
+  },
+  ticketDecor: {
+    position: "absolute",
+    top: 12,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+  },
+  ticketDecorL: { fontSize: 20 },
+  ticketDecorR: { fontSize: 20, transform: [{ scaleX: -1 }] },
+  ticketPct: {
+    fontSize: 56,
+    fontFamily: "Inter_700Bold",
+    color: "#5A3A00",
+    lineHeight: 60,
+  },
+  ticketLabel: {
+    fontSize: 20,
+    fontFamily: "Inter_500Medium",
+    color: "#5A3A00",
+    marginBottom: 12,
+  },
+  ticketNotchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "110%",
+    marginBottom: 12,
+  },
+  ticketNotch: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: "#0A0A0A",
+  },
+  ticketDash: {
+    flex: 1,
+    height: 1.5,
+    backgroundColor: "rgba(90,58,0,0.3)",
+    borderStyle: "dashed",
+  },
+  timerPill: {
+    backgroundColor: "#C0392B",
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+  },
+  timerText: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    fontFamily: "Inter_700Bold",
   },
   headline: {
-    fontSize: 30,
+    fontSize: 22,
     fontFamily: "Inter_700Bold",
     color: "#FFFFFF",
     textAlign: "center",
-    marginBottom: 6,
+    lineHeight: 30,
+    marginBottom: 16,
   },
-  subtitle: {
+  reviewCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    backgroundColor: "#111111",
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 16,
+  },
+  reviewAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "#444444",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  reviewAvatarText: {
+    fontSize: 16,
+    fontFamily: "Inter_700Bold",
+    color: "#FFFFFF",
+  },
+  reviewInfo: {
+    flex: 1,
+  },
+  reviewName: {
     fontSize: 14,
-    fontFamily: "Inter_400Regular",
-    color: "#888888",
-    marginBottom: 24,
+    fontFamily: "Inter_600SemiBold",
+    color: "#FFFFFF",
+  },
+  reviewStars: {
+    fontSize: 12,
+    color: "#E8B030",
   },
   plans: {
-    width: "100%",
     gap: 10,
     marginBottom: 20,
   },
   planCard: {
-    backgroundColor: "#111111",
     borderRadius: 16,
     borderWidth: 1.5,
     borderColor: "#2A2A2A",
+    backgroundColor: "#111111",
     overflow: "hidden",
   },
-  planCardActive: {
-    borderColor: "#D4AF37",
+  planActive: {
+    borderColor: "#E8B030",
   },
   planBadge: {
-    paddingVertical: 5,
-    alignItems: "center",
+    backgroundColor: "#E8B030",
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    alignSelf: "flex-start",
+    borderRadius: 8,
+    margin: 12,
+    marginBottom: 0,
   },
   planBadgeText: {
     fontSize: 11,
     fontFamily: "Inter_700Bold",
-    color: "#000000",
-    letterSpacing: 1.5,
+    color: "#5A3A00",
   },
-  planRow: {
+  planBody: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
     padding: 16,
-    gap: 12,
   },
-  radioOuter: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: "#555555",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  radioOuterActive: {
-    borderColor: "#D4AF37",
-  },
-  radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: "#D4AF37",
-  },
-  planInfo: {
-    flex: 1,
-  },
+  planInfo: {},
   planName: {
     fontSize: 16,
     fontFamily: "Inter_600SemiBold",
     color: "#FFFFFF",
   },
-  planNameActive: {
-    color: "#D4AF37",
+  planSub: {
+    fontSize: 12,
+    fontFamily: "Inter_400Regular",
+    color: "#888888",
+    marginTop: 2,
   },
-  planSaving: {
+  planRight: {},
+  planPrice: {
+    fontSize: 18,
+    fontFamily: "Inter_700Bold",
+    color: "#AAAAAA",
+  },
+  planPriceActive: {
+    color: "#E8B030",
+  },
+  payRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 12,
+  },
+  phonepeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    flex: 1,
+  },
+  phonepeDot: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: "#5F259F",
+  },
+  payUsing: {
     fontSize: 12,
     fontFamily: "Inter_400Regular",
     color: "#888888",
   },
-  planPricing: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    gap: 2,
-  },
-  planPrice: {
-    fontSize: 22,
-    fontFamily: "Inter_700Bold",
-    color: "#FFFFFF",
-  },
-  planPriceActive: {
-    color: "#D4AF37",
-  },
-  planPeriod: {
+  phonepeText: {
     fontSize: 13,
-    fontFamily: "Inter_400Regular",
-    color: "#888888",
-    marginBottom: 2,
+    fontFamily: "Inter_600SemiBold",
+    color: "#FFFFFF",
+    marginLeft: 2,
   },
-  features: {
-    width: "100%",
-    gap: 10,
-    marginBottom: 24,
-  },
-  featureRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  featureIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 8,
-    backgroundColor: "#1A1200",
-    borderWidth: 1,
-    borderColor: "#3A2D00",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  featureText: {
-    fontSize: 14,
-    fontFamily: "Inter_500Medium",
-    color: "#DDDDDD",
-  },
-  btn: {
-    width: "100%",
-    marginBottom: 12,
+  continueBtn: {
+    flex: 1,
   },
   legal: {
     fontSize: 12,
     fontFamily: "Inter_400Regular",
     color: "#555555",
     textAlign: "center",
+    marginBottom: 8,
   },
 });
