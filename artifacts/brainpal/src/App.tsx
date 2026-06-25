@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import LandingScreen from "./screens/LandingScreen";
 import AuthSheet from "./screens/AuthSheet";
 import WelcomeScreen from "./screens/WelcomeScreen";
@@ -17,6 +17,8 @@ import GiftScreen from "./screens/GiftScreen";
 import LimitedOfferScreen from "./screens/LimitedOfferScreen";
 import PricingScreen from "./screens/PricingScreen";
 import InstagramScreen from "./screens/InstagramScreen";
+import HomeScreen from "./screens/HomeScreen";
+import ProfileScreen from "./screens/ProfileScreen";
 
 export type Screen =
   | "landing"
@@ -36,13 +38,19 @@ export type Screen =
   | "gift"
   | "limited-offer"
   | "pricing"
-  | "instagram";
+  | "instagram"
+  | "home"
+  | "profile";
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("landing");
   const [permissionStep, setPermissionStep] = useState(0);
+  const [prevScreen, setPrevScreen] = useState<Screen>("home");
 
-  const go = (s: Screen) => setScreen(s);
+  const go = (s: Screen) => {
+    setPrevScreen(screen);
+    setScreen(s);
+  };
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center" style={{ background: "#111" }}>
@@ -84,7 +92,21 @@ export default function App() {
         {screen === "gift" && <GiftScreen onNext={() => go("limited-offer")} />}
         {screen === "limited-offer" && <LimitedOfferScreen onNext={() => go("pricing")} />}
         {screen === "pricing" && <PricingScreen onNext={() => go("instagram")} />}
-        {screen === "instagram" && <InstagramScreen onNext={() => go("landing")} />}
+        {screen === "instagram" && <InstagramScreen onNext={() => go("home")} />}
+        {screen === "home" && (
+          <HomeScreen
+            onProfile={() => go("profile")}
+            userName="Max"
+            userEmail="max785mmaaxx@gmail.com"
+          />
+        )}
+        {screen === "profile" && (
+          <ProfileScreen
+            onBack={() => go("home")}
+            userName="Max"
+            userEmail="max785mmaaxx@gmail.com"
+          />
+        )}
       </div>
     </div>
   );
